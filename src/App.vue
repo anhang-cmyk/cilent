@@ -1,6 +1,7 @@
 <template>
   <div id="q-app">
-    <div class="head" v-if="platform === 'win32'">
+    <!-- v-if="platform === 'win32'" -->
+    <div class="head">
       <AppHead />
     </div>
 
@@ -51,10 +52,10 @@ export default {
 
   .head {
     position: absolute;
-    top: -10px;
+    top: 0px;
     left: 0;
     width: 100%;
-    height: 20px;
+    height: 40px;
   }
 
   .main {

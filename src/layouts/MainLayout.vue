@@ -48,9 +48,9 @@
           {{ menu2.name }}
         </li>
       </ul>
-      <div :class="['app-view', !subMenus?.length ? 'empt' : '']" style="padding: 24px">
+      <div :class="['app-view', !subMenus?.length ? 'empt' : '']">
         <q-layout>
-          <q-page-container>
+          <q-page-container style="height: 100vh; width: calc(100vw - 60px); padding: 24px">
             <router-view />
           </q-page-container>
         </q-layout>
@@ -154,6 +154,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    margin-top: calc(40px - 14px);
   }
 
   > main {
@@ -161,7 +162,7 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    margin-top: 14px;
+    margin-top: 40px;
   }
 
   > .winMain {

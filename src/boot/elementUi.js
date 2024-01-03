@@ -1,6 +1,7 @@
 import { boot } from 'quasar/wrappers'
 import ElementPlus from 'element-plus';
-import 'element-ui/lib/theme-chalk/index.css';
+import 'element-plus/theme-chalk/index.css';
+import locale from 'element-ui/lib/locale/lang/zh-CN';
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -11,5 +12,5 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
-  app.use(ElementPlus);
+  app.use(ElementPlus, { locale });
 })

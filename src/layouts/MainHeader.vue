@@ -1,15 +1,15 @@
 <template>
   <q-bar class="app-head q-electron-drag">
     <div class="app-head-seller">
-      <div v-if="topName" class="seller" :class="hasOnline ? 'online' : 'offline'">
+      <div class="seller" :class="companyNo ? 'online' : 'offline'">
         <i class="badge" />
-        <div class="seller-name" @click="clickTopName">12312312</div>
+        <div class="seller-name" @click="clickTopName">{{ companyNo || '登录交易中心' }}</div>
       </div>
-      <div v-if="topName" class="mode" ref="mode">
-        <div class="flex flex-center" @click="clickMode">
+      <div class="mode" ref="mode">
+        <!-- <div class="flex flex-center" @click="clickMode">
           <div :class="['mode-btn', isAuto ? 'open' : '']"></div>
           <div class="mode-name">{{ isAuto ? '自动服务中' : '未开启自动模式' }}</div>
-        </div>
+        </div> -->
         <!-- v-model="showProxy" -->
         <div class="popup" :style="{ display: showProxy ? 'block' : 'none' }">
           <div class="mode-confirm">
@@ -36,53 +36,47 @@
     </div>
 
     <div class="app-head-btns">
-      <BFIcon name="bar_min" @click="clickFn('minimize')" />
-      <BFIcon name="bar_max" @click="clickFn('toggleMaximize')" />
-      <BFIcon name="bar_close" @click="clickFn('close')" />
+      <Icon name="bar_min" @click="clickFn('minimize')" />
+      <Icon name="bar_max" @click="clickFn('toggleMaximize')" />
+      <Icon name="bar_close" @click="clickFn('close')" />
     </div>
 
     <div class="app-head-title">
-      <img class="app-head-title__icon" src="img/icon.png" />
+      <!-- <img class="app-head-title__icon" src="img/icon.png" /> -->
       <span class="app-head-title__name">
-        <span>数据采集助手(北京)</span>
-        <span v-if="isTesting === 'test'">(测试包)</span>
-        <span v-if="isTesting === 'dev'">(开发环境)</span>
+        <span>自动助手</span>
+        <span v-if="isTesting">(开发环境)</span>
       </span>
     </div>
-    <BFModal v-model:visible="showModal" title="切换失败" message="当前连接状态不可用，请进入交易中心重新登录" icon="error" okText="去登录" @ok="ready2Login" />
   </q-bar>
+  <!-- <BFModal v-model:visible="showModal" title="切换失败" message="当前连接状态不可用，请进入交易中心重新登录" icon="error" okText="去登录" @ok="ready2Login" /> -->
 </template>
 
 <script>
+import Icon from 'src/components/AppIcon/index.vue';
+
 export default {
   name: 'AppHead',
-  // inject: ['mqtt'],
+  components: { Icon },
   data() {
-    const isTesting = process.env.SAAS_ENV;
+    const isTesting = import.meta.env.DEV;
     return {
       isTesting,
       // 客户端状态
-      isAuto: false, // 是否自动模式
+      // isAuto: false, // 是否自动模式
       isLogined: false, // 是否已登录交易中心
-      count: 0, // 当前售电公司：任务中心已注册数量
-      topic1: '',
-      showProxy: false,
-      showModal: false,
+      // count: 0, // 当前售电公司：任务中心已注册数量
+      // showProxy: false,
+      // showModal: false,
       isCreateTaskWin: false,
       notif: () => {},
     };
   },
   computed: {
-    topName() {
+    companyNo() {
+      return '';
       if (this.userinfo?.membersName) return `${process.env.MARKET_NAME}/${this.userinfo.membersName}`;
       return '';
-    },
-    hasOnline() {
-      // 有自动服务客户端在线
-      return this.count > 0;
-    },
-    membersId() {
-      return this.userinfo?.membersId;
     },
   },
   watch: {
@@ -95,19 +89,10 @@ export default {
     },
   },
   mounted() {
-    /** 获取模式状态 */
-    if (process.env.MODE === 'electron') {
-    }
-    // this.$EventBus.$on('online', () => {
-    //   this.fetchCount();
-    // });
+    window.renderingOnce.mainGlobal(this.onChangeSts);
   },
-  beforeUnmount() {
-    if (process.env.MODE === 'electron') {
-    }
-  },
+  beforeUnmount() {},
   methods: {
-    async fetchCount() {},
     clickFn(t) {
       /** 窗口事件 */
       if (process.env.MODE !== 'electron') return;
@@ -126,10 +111,11 @@ export default {
           break;
       }
     },
-    onChangeSts(e, v) {
+    onChangeSts(a) {
+      console.log(a);
       /** 状态集 */
-      this.isLogined = v.isLogined;
-      this.isAuto = v.isRegistered;
+      // this.isLogined = v.isLogined;
+      // this.isAuto = v.isRegistered;
     },
     isCreatTaskFn() {
       this.isCreateTaskWin = true;
@@ -177,6 +163,24 @@ export default {
       if (process.env.MODE === 'electron') {
       }
     },
+    login() {
+      if (this.logined) {
+        this.$q.notify({
+          message: `已登录，请勿重复点击！`,
+          type: 'info',
+          position: 'center',
+        });
+      }
+      window.renderingSend.loginPowerGrid();
+    },
+    outPowerGrid(msg) {
+      console.log(msg);
+      this.logined = false;
+    },
+    loginedPowerGrid(msg) {
+      console.log(msg);
+      this.logined = true;
+    },
   },
 };
 </script>
@@ -190,6 +194,7 @@ export default {
   padding: 8px;
   height: 100%;
   background: transparent;
+  width: 100%;
 }
 
 .app-head-title {
